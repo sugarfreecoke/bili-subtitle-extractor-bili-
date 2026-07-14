@@ -7,17 +7,18 @@
 
 ## 📦 项目结构
 
-```
-bili-subtitle-lite/
+bili-subtitle-extractor/
 ├── public/
-│   └── index.html       # 前端界面（浏览器打开）
-├── subtitles/            # 提取的字幕输出目录（自动创建）
-├── server.js             # 后端主程序
-├── bili-api.js           # B站 API 封装
-├── package.json          # 项目配置
-├── 启动.bat              # Windows 一键启动脚本
-└── README.md             # 本说明文件
-```
+│   └── index.html          # 前端UI
+├── subtitles/              # 输出文件夹（git会忽略，但保留说明）
+│   └── .gitkeep            # 空文件，保持目录存在
+├── server.js               # 主服务
+├── bili-api.js             # B站API封装
+├── package.json            # 项目配置
+├── 启动.bat                # Windows一键启动
+├── .gitignore              # 忽略不需要的文件
+├── LICENSE                 # 开源协议
+└── README.md               # 项目说明（最重要！）
 
 ---
 
