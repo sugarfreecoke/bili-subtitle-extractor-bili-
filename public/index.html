@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>B站字幕提取器</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.container{width:720px;max-height:95vh;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border-radius:20px;padding:30px;border:1px solid rgba(255,255,255,.1)}
+h1{text-align:center;font-size:24px;margin-bottom:5px;background:linear-gradient(90deg,#fb7299,#00a1d6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{text-align:center;font-size:13px;color:#999;margin-bottom:25px}
+.group{margin-bottom:15px}.group label{display:block;font-size:13px;color:#ccc;margin-bottom:5px}
+.group input{width:100%;padding:10px 14px;font-size:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;outline:none}
+.group input:focus{border-color:#00a1d6}.hint{font-size:11px;color:#888;margin-top:3px}
+#startBtn{width:100%;padding:14px;font-size:16px;font-weight:600;background:linear-gradient(90deg,#fb7299,#00a1d6);border:none;border-radius:12px;color:#fff;cursor:pointer;transition:.3s}
+#startBtn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(251,114,153,.3)}
+#startBtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#progressSection{display:none;margin-top:15px}
+.bar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,#fb7299,#00a1d6);transition:width .3s}
+#log{max-height:280px;overflow-y:auto;background:rgba(0,0,0,.3);padding:12px;border-radius:10px;font-size:12px;line-height:1.8;font-family:Consolas,monospace;color:#ddd}
+#resultSection{display:none;margin-top:15px;text-align:center}
+#resultSection h2{color:#4ade80;margin-bottom:10px}
+#resultSection button{padding:10px 24px;margin-top:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;cursor:pointer}
+.footer{text-align:center;font-size:11px;color:#555;margin-top:20px}
+</style></head><body>
+<div class=container><h1>🎬 B站字幕批量提取器</h1><p class=sub>输入UP主UID或视频链接，一键下载所有字幕</p>
+<div class=group><label>UP主UID / 视频链接：</label><input id=input placeholder="例如: 546195 或 BV链接"></div>
+<div class=group><label>Cookie：</label><input id=cookie type=password placeholder="F12→网络→复制Cookie"><span class=hint>💡 浏览器F12→网络→刷新B站→点请求→复制Cookie</span></div>
+<div class=group><label>最大处理数（0=全部）：</label><input id=maxVideos type=number value=0 style=width:80px></div>
+<button id=startBtn onclick=startExtract()>▶ 开始提取</button>
+<div id=progressSection><div class=bar><div class=fill id=progressFill></div></div><div id=log></div></div>
+<div id=resultSection><h2>✅ 提取完成！</h2><div id=stats></div><button onclick=openOutput()>📂 打开输出文件夹</button></div>
+<div class=footer>仅供个人学习使用</div></div>
+<script>
+let e=false,t=null;
+function startExtract(){if(e)return;const i=document.getElementById('input').value.trim(),c=document.getElementById('cookie').value.trim(),m=parseInt(document.getElementById('maxVideos').value)||0;if(!i){alert('请输入UID或链接');return}if(!c){alert('请填写Cookie');return}e=true;document.getElementById('startBtn').disabled=true;document.getElementById('startBtn').textContent='⏳ 提取中...';document.getElementById('progressSection').style.display='block';document.getElementById('resultSection').style.display='none';document.getElementById('log').innerHTML='';document.getElementById('progressFill').style.width='0%';t=setInterval(async()=>{const r=await fetch('/api/progress'),d=await r.json();document.getElementById('log').innerHTML=d.logs.map(l=>`<div>${l}</div>`).join('');document.getElementById('progressFill').style.width=Math.min(d.logs.length*2,90)+'%'},1000);fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input:i,cookie:c,maxVideos:m})}).then(r=>r.json()).then(r=>{clearInterval(t);e=false;document.getElementById('startBtn').disabled=false;document.getElementById('startBtn').textContent='▶ 开始提取';document.getElementById('progressFill').style.width='100%';if(r.success){document.getElementById('stats').innerHTML='📊 总计: '+r.stats.total+'个<br>✅ 成功: '+r.stats.success+'<br>⏭️ 无字幕: '+r.stats.noSub+'<br>❌ 失败: '+r.stats.fail;document.getElementById('resultSection').style.display='block'}})}
+function openOutput(){fetch('/api/open')}
+</script></body></html>
