@@ -151,4 +151,4 @@ MIT License
 **Enjoy! 🎉**
 ```
 
-复制上面的全部内容，保存为 `README.md` 即可。如果路径是 `D:\Zspace\bili-subtitle-lite\README.md`，下次打开文件夹就能看到漂亮的文档了。
+
